@@ -1,0 +1,237 @@
+public class Database extends SQLiteAssetHelper {
+    private static final String DB_NAME = "EatsDB.db";
+    private static final int DB_VER = 1;
+
+    public Database(Context context) {
+        super( context, DB_NAME, null, DB_VER );
+    }
+
+    public List<Order> getCarts() {
+        SQLiteDatabase db = getReadableDatabase();
+        SQLiteQueryBuilder qb=new SQLiteQueryBuilder();
+        String[] sqlselect={"ProductName","ProductId","Quality","Prices","Discount"};
+        String sqlTable="OrderDetaile";
+        qb.setTables( sqlTable );
+        Cursor c=qb.query( db,sqlselect,null,null,null,null,null );
+        final List<Order> result=new ArrayList<>();
+        if (c.moveToFirst())
+        {
+            do {
+                result.add( new Order(
+                        c.getString( c.getColumnIndex( "ProductName" ) ),
+                        c.getString( c.getColumnIndex( "Quality" ) ),
+                        c.getString( c.getColumnIndex( "Prices" ) ),
+                        c.getString( c.getColumnIndex( "Discount" ) ),
+                        c.getString( c.getColumnIndex( "ProductId" ) )
+
+                ));
+            }while (c.moveToNext());
+        }
+        return result;
+    }
+    public void addToCard(Order order){
+        SQLiteDatabase db=getReadableDatabase();
+        String query=String.format( "INSERT INTO OrderDetaile(ProductId,ProductName,Quality,Prices,Discount) VALUES('%s','%s','%s','%s','%s');",
+        order.getProductId(),
+                order.getProductName(),
+                order.getQuality(),
+                order.getPrices(),
+                order.getDiscount());
+        db.execSQL( query );
+    }
+    public void cleanCart(){
+        SQLiteDatabase db=getReadableDatabase();
+        String quiry=String.format( "DELETE FROM OrderDetail" );
+        db.execSQL( quiry );
+    }
+
+}
+class CardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public TextView tx_card_name,tx_price;
+    private ItemClickListener itemClickListener;
+    public void setTx_card_name(TextView tx_card_name) {
+        this.tx_card_name = tx_card_name;
+    }
+
+    public CardViewHolder(@NonNull View itemView) {
+        super( itemView );
+        tx_card_name=itemView.findViewById( R.id.te2 );
+        tx_price=itemView.findViewById( R.id.tx4 );
+    }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+}
+
+
+public class CardAdapter extends RecyclerView.Adapter<CardViewHolder> {
+    private List<Order> listdata=new ArrayList<>(  );
+    private Context context;
+
+    public CardAdapter(List<Order> listdata, Context context) {
+        this.listdata = listdata;
+        this.context = context;
+    }
+
+    @NonNull
+    @Override
+    public CardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater=LayoutInflater.from( context );
+        View view=inflater.inflate( R.layout.card_design,parent,false );
+        return new CardViewHolder( view );
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
+     holder.tx_card_name.setText( listdata.get( position ).getProductName() );
+    }
+
+    @Override
+    public int getItemCount() {
+        return listdata.size();
+    }
+}
+class CardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public TextView tx_card_name,tx_price;
+    private ItemClickListener itemClickListener;
+    public void setTx_card_name(TextView tx_card_name) {
+        this.tx_card_name = tx_card_name;
+    }
+
+    public CardViewHolder(@NonNull View itemView) {
+        super( itemView );
+        tx_card_name=itemView.findViewById( R.id.te2 );
+        tx_price=itemView.findViewById( R.id.tx4 );
+    }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+}public class Cart extends AppCompatActivity {
+TextView textView;
+Button button;
+RecyclerView recyclerView;
+RecyclerView.LayoutManager layoutManager;
+FirebaseDatabase database;
+DatabaseReference request;
+List<Order> cart=new ArrayList<>(  );
+    CardAdapter adapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate( savedInstanceState );
+        setContentView( R.layout.activity_cart );
+        TextView textView;
+Button button;
+RecyclerView recyclerView;
+RecyclerView.LayoutManager layoutManager;
+FirebaseDatabase database;
+DatabaseReference request;
+List<Order> cart=new ArrayList<>(  );
+    CardAdapter adapter;
+    }
+
+    private void loadListFood() {
+        cart=new Database( this ).getCarts();
+        adapter= new CardAdapter(cart,this );
+        recyclerView.setAdapter(  adapter );
+    }
+}
+textView=findViewById( R.id.text1 );
+        button=findViewById( R.id.bt1 );
+        recyclerView=findViewById( R.id.re2 );
+        layoutManager=new LinearLayoutManager( this );
+        recyclerView.setLayoutManager( layoutManager );
+        cart=new MyDbHandler( this ).getCarts();
+        adapter=new FloatAdapter(this,cart);
+        recyclerView.setAdapter( adapter );
+ <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        >
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+
+         android:orientation="vertical">
+         <TextView
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:textSize="20dp"
+             android:id="@+id/text1"
+             android:text="Total"/>
+         <Button
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:text="place order"
+             android:id="@+id/bt1"/>
+     </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+databaseReference=FirebaseDatabase.getInstance().getReference().child( "Request" );
+        recyclerView = root.findViewById(R.id.re2);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setHasFixedSize( true );
+
+        options =
+                new FirebaseRecyclerOptions.Builder<Request>()
+                        .setQuery(databaseReference, Request.class)
+                        .build();
+
+        adapter = new FirebaseRecyclerAdapter<Request, ViewMyHolder>(options) {
+
+            @NonNull
+            @Override
+            public ViewMyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view=LayoutInflater.from( parent.getContext() ).inflate( R.layout.tools_design,parent,false );
+                return new ViewMyHolder( view );
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull ViewMyHolder viewMyHolder, int i, @NonNull Request request) {
+               viewMyHolder.t1.setText( request.getAddress() );
+            }
+        };
+recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setHasFixedSize( true );
+
+        options =
+                new FirebaseRecyclerOptions.Builder<Request>()
+                        .setQuery(databaseReference, Request.class)
+                        .build();
+        adapter = new FirebaseRecyclerAdapter<Request, ViewMyHolder>( options ) {
+            @NonNull
+            @Override
+            public ViewMyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view=LayoutInflater.from( parent.getContext() ).inflate( R.layout.tools_design,parent,false );
+                return new ViewMyHolder( view );
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull ViewMyHolder viewMyHolder, int i, @NonNull Request request) {
+                viewMyHolder.t1.setText( request.getAddress() );
+
+            }
+        };
+
+        adapter.startListening();
+        recyclerView.setAdapter( adapter );
+@NonNull
+            @Override
+            public ViewMyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view=LayoutInflater.from( parent.getContext() ).inflate( R.layout.tools_design,parent,false );
+                return new ViewMyHolder( view );
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull ViewMyHolder viewMyHolder, int i, @NonNull Request request) {
+                 View view=LayoutInflater.from( parent.getContext() ).inflate( R.layout.tools_design,parent,false );
+                return new ViewMyHolder( view );
+
+            }
+        };
+

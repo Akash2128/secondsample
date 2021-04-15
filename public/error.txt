@@ -1,0 +1,3 @@
+021-01-02 03:41:00.018 21467-21467/? E/com.root.getmi: Unknown bits set in runtime_flags: 0x28000
+2021-01-02 03:41:01.797 21467-21621/com.root.getmii E/Perf: Fail to get file list com.root.getmii
+2021-01-02 03:41:01.797 21467-21621/com.root.getmii E/Perf: getFolderSize() : Exception_1 = java.lang.NullPointerException: Attempt to get length of null array
