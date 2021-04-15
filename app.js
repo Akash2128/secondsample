@@ -1,4 +1,4 @@
-const PORT=3000
+const port = process.env.PORT || 8000;
 var express=require('express')
 var app=express()
 var mysql=require('mysql')
@@ -24,6 +24,6 @@ app.use(bodyParser.json())
 
 app.use("/",routes)
 
-app.listen(PORT,()=>{
-    console.log('BACKEND running on port'+PORT)
+app.listen(port,()=>{
+    console.log(`BACKEND running on port ${port}`);
 })
